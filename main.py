@@ -16,7 +16,7 @@ line_break = "="*30
 
 EMAIL = credits.EMAIL
 PASSWORD = credits.PASSWORD
-COLUMNS = ["name", "ip_address"]
+COLUMNS = ["","","name", "remark", "platform", "username", "cookie", "proxytype", "proxy", "proxyurl", "proxyid", "ip", "countrycode", "ua"]
 df = pd.DataFrame(columns=COLUMNS)
 
 ips_list = []
@@ -34,6 +34,7 @@ def init():
 
     options.add_extension('cap_sol.crx')
     driver = uc.Chrome(options=options)
+    driver.maximize_window()
     
     print("Captcha Solver Added")
     time.sleep(2)
@@ -71,7 +72,7 @@ def is_captcha_solved():
     print("Start of CAPTCHA_SOLVE_CHECK Function".center(60))
 
     try:
-        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID,"l_email")))
+        WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.ID,"l_email")))
     except:
         print("Can't Find Email Address, meaning we are not on Login Page Yet...")
         is_captcha_solved()
@@ -79,7 +80,7 @@ def is_captcha_solved():
 
     try:
         print("waiting 10 seconds")
-        # time.sleep(10)
+        time.sleep(10)
         print("Trying to switch to the iFrame...")
         iframe = driver.find_elements(By.TAG_NAME, 'iframe')[1]
         print("got iframe")
@@ -117,7 +118,10 @@ def is_captcha_solved():
             print("Can't Get Aria-Attribute of Captcha CheckBox...")
     except:
         print("Can't Find the CheckBox for Captcha...")
-        time.sleep(5)
+        print("            =================================================================            ")
+        print("<<========= Select Me to Pause the bot to complete Captcha if still remaining =========>>")
+        print("            =================================================================            ")
+        time.sleep(15)
         driver.switch_to.default_content()
 
     try:
@@ -348,9 +352,10 @@ def scrape_ips(rows):
             ip_field = row.find_elements(By.TAG_NAME, "td")[0]
             try:
                 ip = ip_field.text
-                if "sorry" not in ip:
-                    if "*" not in ip:
-                        ips_list.append(ip)
+                if ip:
+                    if "sorry" not in ip:
+                        if "*" not in ip:
+                            ips_list.append(ip)
                 print(f"{i}th IP is : {ip}")
             except:
                 print(f"Can't find IP# {i}")
@@ -405,8 +410,8 @@ def main():
     else:
         print('"Else Block" of driver()')
     finally:
-        df["ip_address"] = ips_list
-        df["name"] = "socks"
+        df["proxy"] = ips_list
+        df["proxytype"] = "Socks5"
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         df.to_excel(f"Kumi_T._{timestamp}.xlsx", index=False)
 
