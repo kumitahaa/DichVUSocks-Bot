@@ -1,5 +1,2 @@
-selenium
 pandas
-datetime
-time
-traceback
+selenium
