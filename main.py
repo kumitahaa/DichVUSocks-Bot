@@ -196,6 +196,7 @@ def start():
     print("Start of START Fucntion...".center(60))
     
     is_ip_page()
+    remove_blacklisted()
 
     try:
         all_pages_list = WebDriverWait(driver, 7).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "uk-first-column")))
@@ -215,7 +216,6 @@ def start():
                   {line_break}""")
             break
 
-        remove_blacklisted()
         total_rows()
         # all_pages_list[3].text.split(" ")[-1]
         next_page()
@@ -237,7 +237,7 @@ def is_ip_page():
     print(line_break.center(60))
 
 # --------------------------------- Remove Blacklisted Results -------------------------------------
-def remove_blacklisted():
+def remove_unwanted_results():
     print(line_break.center(60))
     print("Start Remove Blacklisted Results...".center(60))
     try:
@@ -288,6 +288,27 @@ rows.forEach(function(row) {
     print("End of Blacklisted Results Removing".center(60))
     print(line_break.center(60))
 
+# --------------------------------- Remove Blacklisted Results -------------------------------------
+def remove_blacklisted():
+    print(line_break.center(60))
+    print("Start Remove Blacklisted Results...".center(60))
+    try:
+        time.sleep(4)
+        print("Trying to remove")
+        driver.execute_script("""
+
+document.getElementById("useType").value = "Residential";
+document.getElementById("search_country").value = "United States";
+document.getElementById("search_YN").value = "No";
+document.getElementsByClassName("sockslist__card__btnP sockslist__card__btnP--c1 uk-button uk-button-default uk-button-small")[0].click();
+                                          """)
+    except:
+        print(f"Error while removing blacklisted: Error")
+    
+    time.sleep(2)
+    print("End of Blacklisted Results Removing".center(60))
+    print(line_break.center(60))
+
 # --------------------------------- Next Page of Results -------------------------------------
 def next_page():
     print(line_break.center(60))
@@ -317,6 +338,9 @@ def reveal_ips(rows):
 
     i = 0
     for row in rows:
+        if i > required_ips:
+            print("Revealed enough IPs")
+            break
         i+=1
         try:
             ip_field = row.find_elements(By.TAG_NAME, "td")[0].find_elements(By.TAG_NAME, "a")[0]
@@ -356,7 +380,7 @@ def scrape_ips(rows):
                     if "sorry" not in ip:
                         if "*" not in ip:
                             ips_list.append(ip)
-                print(f"{i}th IP is : {ip}")
+                            print(f"{i}th IP is : {ip}")
             except:
                 print(f"Can't find IP# {i}")
         except:
