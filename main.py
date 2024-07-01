@@ -32,6 +32,9 @@ def init():
     print("Start of INIT Fucntion...".center(60))
     options = Options()
 
+    options.add_argument("--log-level=3")
+    options.add_argument("--disable-logging")
+    
     options.add_extension('cap_sol.crx')
     driver = uc.Chrome(options=options)
     driver.maximize_window()
@@ -338,7 +341,7 @@ def reveal_ips(rows):
 
     i = 0
     for row in rows:
-        if i > required_ips:
+        if i+len(ips_list) > required_ips:
             print("Revealed enough IPs")
             break
         i+=1
@@ -378,9 +381,10 @@ def scrape_ips(rows):
                 ip = ip_field.text
                 if ip:
                     if "sorry" not in ip:
-                        if "*" not in ip:
-                            ips_list.append(ip)
-                            print(f"{i}th IP is : {ip}")
+                        if "offline" not in ip:
+                            if "*" not in ip:
+                                ips_list.append(ip)
+                                print(f"{i}th IP is : {ip}")
             except:
                 print(f"Can't find IP# {i}")
         except:
